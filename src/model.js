@@ -182,4 +182,34 @@ kNN.Model = (function( global, undefined )
 
 		return prediction;
 	};
+	/**
+	 * Classifies a point based on the
+	 * dimensions of the training data.
+	 * @param {Number} K How many adjacent points to compare
+	 * @param {Point} point
+	 */
+	{
+		var distance,
+			f, i, j, p;
+
+		i = this.points.length;
+
+		points = [];
+
+		while( i-- )
+			p = this.points[ i ];
+			distance = 0;
+
+			{
+				f = this.features[ j ];
+				distance += Math.pow(
+					f.calcDistance( point, p ),
+					2
+				);
+
+			distance = Math.sqrt( distance );
+		}
+		points = sortPoints( points );
+		return predictCategory( K, point, points );
+	};
 })( this );
