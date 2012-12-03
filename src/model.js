@@ -127,4 +127,59 @@ kNN.Model = (function( global, undefined )
 	};
 
 	return Model;
+	/**
+	 * Arrange a list of points by
+	 * ascending distance.
+	 *
+	 * @param {Array} points A multi-dimensional
+	 *     array containing [ point<Point>, distance<Number> ]
+	 * @return {Array} Sorted array of points
+	 */
+	sortPoints = function sortPoints( points )
+		return points.sort(function(a, b)
+		{
+			return a[1] < b[1] ? -1 : 1;
+	};
+	/**
+	 * Predict the category for a point
+	 * based on its K-nearest neighbors
+	 * @param  {Number} K How many points to compare
+	 * @param  {Point} point
+	 * @param  {Array} neighbors An array of points
+	 * @return {String}
+	 */
+	{
+
+			bestScore,
+			force,
+			key,
+			i, n;
+
+		categories = {};
+		i = 0;
+
+		for( ; i < K; i++ )
+		{
+			n = neighbors[i];
+			if( !categories.hasOwnProperty(n.category) )
+				categories[ n.category ] = 0;
+
+
+		{
+			// choose randomly between the two
+
+			{
+				{
+					force = true;
+				}
+			}
+
+			if( force || categories[key] > bestScore )
+			{
+				bestScore = categories[key];
+			}
+		}
+
+		return prediction;
+	};
 })( this );
