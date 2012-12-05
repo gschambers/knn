@@ -1,9 +1,10 @@
 /**
  * Abstract base class for model features.
- * 
+ *
  * @param {String} key Feature name
  * @class Feature
  */
+kNN.feature = {};
 kNN.feature.Feature = (function( global, undefined )
 {
 	"use strict";
@@ -18,11 +19,11 @@ kNN.feature.Feature = (function( global, undefined )
 	/**
 	 * This must be implemented by a subclass,
 	 * or a NotImplementedError will be raised.
-	 * 
+	 *
 	 * The subclass method will calculate the
 	 * distance between two points for a single
 	 * dimension.
-	 * 
+	 *
 	 * @param  {Point} a
 	 * @param  {Point} b
 	 * @return {Undefined}
