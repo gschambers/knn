@@ -1,0 +1,69 @@
+<project name="kNN" default="prod" basedir=".">
+	<description>k-Nearest Neighbor build</description>
+
+	<property name="source.dir" location="src" />
+	<property name="build.dir" location="build" />
+	<property name="test.dir" location="tests" />
+
+	<property file="version.properties" />
+	<property name="version.number" value="${version.major}.${version.minor}.${version.patch}" />
+
+	<!--
+	<target name="test"
+		description="Run unit tests">
+
+		<apply executable="${build.dir}/tools/phantomjs/bin/phantomjs" failonerror="true">
+			<arg value="${build.dir}/tools/phantomjs/integration/qunit.js" />
+			<arg value="${test.dir}/index.html" />
+		</apply>
+
+	</target>
+	-->
+
+	<!--
+	<target name="document"
+		description="Generates automated documentation via YUIDoc">
+
+		<apply executable="${build.dir}/tools/yuidoc/bin/yuidoc" parallel="false">
+			<arg path="${source.dir}" />
+		</apply>
+
+	</target>
+	-->
+
+	<target name="concat"
+		description="Concatenates JS source files">
+
+		<concat destfile="${build.dir}/knn-${version.number}.js">
+			<filelist dir="${source.dir}">
+				<file name="init.js" />
+				<file name="util.js" />
+				
+				<file name="feature/init.js" />
+				<file name="feature/numerical.js" />
+				<file name="feature/category.js" />
+				
+				<file name="point.js" />
+				<file name="model.js" />
+			</filelist>
+		</concat>
+
+	</target>
+
+	<target name="minify" depends="concat"
+		description="Minify output JS file using YUI compressor">
+
+		<apply executable="java" parallel="false">
+			<filelist dir="${build.dir}" files="knn-${version.number}.js" />
+			<arg line="-jar" />
+			<arg path="${build.dir}/tools/java/lib/yuicompressor-2.4.7.jar" />
+			<srcfile />
+			<arg line="-o" />
+			<mapper type="glob" from="*.js" to="${build.dir}/*.min.js" />
+			<targetfile />
+		</apply>
+
+	</target>
+
+	<target name="prod" depends="minify" />
+</project>
