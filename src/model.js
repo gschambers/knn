@@ -19,46 +19,37 @@ kNN.Model = (function( global, undefined )
 	 */
 	extractFeatures = function extractFeatures( points )
 	{
-		var i, j,
-
-			features,
-
-			feature,
-			point;
-
-		i = points.length;
+		var features;
 		features = {};
 
-		pointLoop:
-		while( i-- )
+		points.forEach(function( point )
 		{
-			point = points[ i ];
-
-			featureLoop:
-			for( j in point.keys() )
+			point.keys().forEach(function( key )
 			{
-				if( !features.hasOwnProperty(j) )
+				var feature;
+
+				if( !features.hasOwnProperty(key) )
 				{
-					switch( typeof point.get(j) )
+					switch( typeof point.get(key) )
 					{
 						case "number":
-							feature = new kNN.feature.Numerical( j );
+							feature = new kNN.feature.Numerical( key );
 							break;
 
 						case "string":
-							feature = new kNN.feature.Category( j );
+							feature = new kNN.feature.Category( key );
 							break;
 
 						default:
-							continue featureLoop;
+							return;
 					}
 
-					features[ j ] = feature;
+					features[ key ] = feature;
 				}
 
-				features[ j ].checkValue( point.get(j) );
-			}
-		}
+				features[ key ].checkValue( point.get(key) );
+			});
+		});
 
 		return features;
 	};
@@ -82,6 +73,7 @@ kNN.Model = (function( global, undefined )
 	/**
 	 * Predict the category for a point
 	 * based on its K-nearest neighbors
+	 *
 	 * @param  {Number} K How many points to compare
 	 * @param  {Point} point
 	 * @param  {Array} neighbors An array of points
@@ -99,11 +91,12 @@ kNN.Model = (function( global, undefined )
 			i, n;
 
 		categories = {};
+		bestScore = 0;
 		i = 0;
 
 		for( ; i < K; i++ )
 		{
-			n = neighbors[i];
+			n = neighbors[i][0];
 
 			if( !categories.hasOwnProperty(n.category) )
 			{
@@ -146,18 +139,17 @@ kNN.Model = (function( global, undefined )
 	 */
 	Model = function Model( data )
 	{
-		var i;
+		var self;
+		self = this;
 
 		this.points = [];
 
-		i = data.length;
-
-		while( i-- )
+		data.forEach(function( item )
 		{
-			this.points.push(
-				new kNN.Point( data[i][0], data[i][1] )
+			self.points.push(
+				new kNN.Point( item[0], item[1] )
 			);
-		}
+		});
 
 		this.features = extractFeatures( this.points );
 	};
@@ -166,40 +158,36 @@ kNN.Model = (function( global, undefined )
 	 * Classifies a point based on the
 	 * dimensions of the training data.
 	 *
-	 * @param {Number} K How many adjacent points to compare
 	 * @param {Point} point
+	 * @param {Number} K Number of points to compare
 	 * @return {String}
 	 */
-	Model.prototype.classify = function classify( K, point )
+	Model.prototype.classify = function classify( point, K )
 	{
 		var distance,
 			points,
+			self;
 
-			f, i, j, p;
-
-		i = this.points.length;
-		j = this.features.length;
-
+		self = this;
 		points = [];
 
-		while( i-- )
+		this.points.forEach(function( p )
 		{
-			p = this.points[ i ];
+			var key;
+
 			distance = 0;
 
-			for( j in this.features )
+			for( key in self.features )
 			{
-				f = this.features[ j ];
-
 				distance += Math.pow(
-					f.calcDistance( point, p ),
+					self.features[ key ].calcDistance( point, p ),
 					2
 				);
 			}
 
 			distance = Math.sqrt( distance );
 			points.push( [p, distance] );
-		}
+		});
 
 		points = sortPoints( points );
 		return predictCategory( K, point, points );
